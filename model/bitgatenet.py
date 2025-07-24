@@ -1,6 +1,5 @@
 """BitGateNet‑V2.
-Compact keyword‑spotting CNN with gate residuals and depth‑wise head.
-All sentences end with a period.
+keyword‑spotting CNN with gate residuals and depth‑wise head.
 """
 
 import torch.nn as nn
@@ -14,7 +13,7 @@ from .depthwise import DepthwiseSeparable
 
 
 class BitGateNetV2(nn.Module):
-    """Backbone network: Conv → (GateBN ×2) → DW head → FC."""
+    """Backbone network: Conv => (GateBN ×2) => DW head => FC."""
 
     def __init__(
         self,
@@ -69,5 +68,5 @@ class BitGateNetV2(nn.Module):
         x = self.dropout(x)
         return self.fc(x)
 
-    def __str__(self):  # noqa: D401
+    def __str__(self):
         return "BitGateNetV2"

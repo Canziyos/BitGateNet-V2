@@ -8,9 +8,7 @@ from utils import SymQuant8bit
 class BatchNorm2D(nn.BatchNorm2d):
     """BatchNorm2d with symmetric fake‑quant support.
     Caches de‑quantised gamma/beta in eval() to avoid per‑call quant ops.
-    All sentences end with a period.
     """
-
     def __init__(
         self,
         num_features: int,

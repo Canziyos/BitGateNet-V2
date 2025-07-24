@@ -6,9 +6,7 @@ from utils import SymQuant8bit
 class Parameter(nn.Module):
     """Learnable scalar / tensor with symmetric fake‑quant support.
     Caches de‑quantised float tensor in eval() for speed.
-    All sentences end with a period.
     """
-
     def __init__(
         self,
         val: torch.Tensor,

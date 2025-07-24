@@ -9,7 +9,6 @@ from utils import SymQuant8bit
 class Conv2d(nn.Conv2d):
     """2-D convolution with symmetric fake-quant support (per-output-channel).
     Caches de-quantised float weights/bias at eval() for speed.
-    All sentences end with a period.
     """
 
     def __init__(
@@ -39,15 +38,15 @@ class Conv2d(nn.Conv2d):
             padding_mode=padding_mode,
         )
 
-        # *** Change: per-output-channel (group_dim=0) default. ***
+        # Change: per-output-channel (group_dim=0) default.
         self.quantizer = quantizer or SymQuant8bit(group_dim=0, group_size=1)
         self.out_int = out_int
-        self.register_buffer("_w_fq", None)  # cached de-quantised weight
+        self.register_buffer("_w_fq", None)  # cached de-quantised weight.
         self.register_buffer("_b_fq", None)  # cached de-quantised bias
 
-    # ------------------------------------------------------------------ #
-    # Helpers.                                                           #
-    # ------------------------------------------------------------------ #
+    # -------- #
+    # Helpers. #
+    # -------- #
     def _cache_eval_tensors(self) -> None:
         """Quantise weights/bias once and cache float copies."""
         w_q, w_scale = self.quantizer.quantize(self.weight)
@@ -70,7 +69,7 @@ class Conv2d(nn.Conv2d):
     # ------------------------------------------------------------------ #
     # Forward.                                                           #
     # ------------------------------------------------------------------ #
-    def forward(self, x: torch.Tensor) -> torch.Tensor:  # noqa: D401
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
         # Float path when quantiser disabled.
         if not self.quantizer.enabled:
             return F.conv2d(

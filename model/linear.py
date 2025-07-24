@@ -8,7 +8,6 @@ from utils import SymQuant8bit
 class Linear(nn.Linear):
     """Fully‑connected layer with symmetric fake‑quant support.
     Caches de‑quantised float weights and bias once in eval() for speed.
-    All sentences end with a period.
     """
 
     def __init__(
@@ -23,13 +22,12 @@ class Linear(nn.Linear):
         super().__init__(in_features, out_features, bias=bias)
         self.quantizer = quantizer or SymQuant8bit(group_dim=0, group_size=1)
         self.out_int = out_int
-        # Cached tensors for eval().
+        # Cached tensors for eval(.
         self.register_buffer("_w_fq", None)
         self.register_buffer("_b_fq", None)
 
-    # ------------------------------------------------------------------ #
-    # Helpers.                                                           #
-    # ------------------------------------------------------------------ #
+
+    # Helpers.
     def _cache_eval_tensors(self) -> None:
         """Quantise once and cache float tensors for eval()."""
         w_q, w_scale = self.quantizer.quantize(self.weight)
@@ -40,8 +38,7 @@ class Linear(nn.Linear):
         else:
             self._b_fq = None
 
-    # ------------------------------------------------------------------ #
-    # Forward.                                                           #
+
     # ------------------------------------------------------------------ #
     def forward(self, x: torch.Tensor) -> torch.Tensor:  # noqa: D401
         # Float path when quantiser disabled.

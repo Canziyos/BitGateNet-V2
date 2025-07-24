@@ -1,6 +1,5 @@
 import unittest
 import torch
-
 from model import DualGateBN
 from utils import SymQuant8bit
 

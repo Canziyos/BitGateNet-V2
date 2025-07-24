@@ -8,7 +8,6 @@ from utils import SymQuant8bit
 class DualGateBN(nn.Module):
     """Two GateResidual + BatchNorm2D blocks with a residual skip.
     Structure: (Gate → BN) × 2, followed by skip‑connection add.
-    All sentences end with a period.
     """
 
     def __init__(
@@ -37,10 +36,8 @@ class DualGateBN(nn.Module):
             BatchNorm2D(in_channels, quantizer=q),
         )
 
-    # ------------------------------------------------------------------ #
     # Forward.
-    # ------------------------------------------------------------------ #
-    def forward(self, x):  # noqa: D401
+    def forward(self, x):
         out = self.block1(x)
         out = self.block2(out)
         return out + x

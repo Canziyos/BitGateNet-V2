@@ -7,9 +7,8 @@ from .batchnorm2d import BatchNorm2D
 
 
 class DepthwiseSeparable(nn.Module):
-    """Depth‑wise separable conv block: DW‑3×3 → PW‑1×1 → BN → ReLU.
+    """Depth‑wise separable conv block: DW‑3×3 => PW‑1×1 => BN => ReLU.
     Parameters allow stride/padding tweaks so the layer can down‑sample.
-    All sentences end with a period.
     """
 
     def __init__(
@@ -42,7 +41,7 @@ class DepthwiseSeparable(nn.Module):
     # ------------------------------------------------------------------ #
     # Forward.                                                           #
     # ------------------------------------------------------------------ #
-    def forward(self, x):  # noqa: D401
+    def forward(self, x):
         x = F.relu(self.dw(x))
         x = self.bn(self.pw(x))
         return F.relu(x)

@@ -1,7 +1,5 @@
 import unittest
 import torch
-
-# Adjust these two import paths if the project layout differs.
 from model import DepthwiseSeparable
 from utils import SymQuant8bit
 
@@ -30,7 +28,7 @@ class TestDepthwiseSeparable(unittest.TestCase):
 
     # ------------------------------------------------------------------ #
     # Quantiser disabled path.                                           #
-    # ------------------------------------------------------------------ #
+    # ------------------------------------------------- #
     def test_forward_without_quant(self):
         block = self._make_block(in_ch=8, out_ch=16, stride=1, q_en=False)
         x = torch.randn(1, 8, 16, 16)
@@ -57,7 +55,7 @@ class TestDepthwiseSeparable(unittest.TestCase):
         x = torch.randn(1, 16, 32, 32)
         block.eval()
         with torch.no_grad():
-            _ = block(x)  # first pass populates caches
+            _ = block(x)  # first pass populates caches.
             _ = block(x)  # second pass must not raise
 
 

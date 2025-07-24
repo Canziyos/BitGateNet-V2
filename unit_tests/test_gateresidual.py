@@ -1,7 +1,6 @@
 import unittest
 import torch
-
-from model import GateResidual           # adjust import if layout differs
+from model import GateResidual 
 from utils import SymQuant8bit
 
 

@@ -10,13 +10,12 @@ from utils import SymQuant8bit, LoggerUnit
 
 class GateResidual(nn.Module):
     """Gated residual block.
-    Down‑sample → bottleneck → up‑sample path produces a sigmoid mask that modulates the residual.
-    Set `depthwise=True` to replace pointwise 1×1 convs with depth‑wise separable blocks.
-    All sentences end with a period.
+    Down‑sample => bottleneck => up-sample path produces a sigmoid mask
+    that modulates the residual. Set "depthwise=true" to replace pointwise
+    1*1 convs with depth‑wise separable blocks.
     """
 
-    def __init__(
-        self,
+    def __init__(        self,
         in_channels: int,
         mid_ch: int,
         out_ch: int,

@@ -1,6 +1,5 @@
 import unittest
 import torch
-
 from model import Linear
 from utils import SymQuant8bit
 

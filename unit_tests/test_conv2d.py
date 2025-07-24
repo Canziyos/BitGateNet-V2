@@ -1,7 +1,7 @@
 import unittest
 import torch
 
-from model import Conv2d                  # adjust import if layout differs
+from model import Conv2d 
 from utils import SymQuant8bit
 
 
