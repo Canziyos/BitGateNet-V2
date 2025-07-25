@@ -8,6 +8,7 @@ import os, random, glob, soundfile as sf, torch, torchaudio
 import torch.nn.functional as F
 from torch.utils.data import Dataset, Subset, DataLoader
 from collections import defaultdict
+from tqdm import tqdm
 
 from model import BitGateNetV2
 
@@ -78,7 +79,8 @@ def main():
 
     for epoch in range(epochs):
         model.train()
-        for x, y in train_dl:
+
+        for x, y in tqdm(train_dl, desc="Training", ncols=80):
             x, y = x.to(device), y.to(device)
             opt.zero_grad()
             F.cross_entropy(model(x), y).backward()
@@ -86,7 +88,7 @@ def main():
 
         model.eval(); correct = total = 0
         with torch.no_grad():
-            for x, y in val_dl:
+            for x, y in tqdm(val_dl, desc="Training", ncols=80):
                 x, y = x.to(device), y.to(device)
                 pred = model(x).argmax(1)
                 correct += (pred == y).sum().item(); total += y.numel()

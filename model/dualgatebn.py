@@ -28,12 +28,15 @@ class DualGateBN(nn.Module):
         self.block1 = nn.Sequential(
             GateResidual(in_channels, mid0, out0, quantizer=q, depthwise=depthwise),
             BatchNorm2D(in_channels, quantizer=q),
+            # nn.Identity()
+
         )
 
         # Second Gate + BN.
         self.block2 = nn.Sequential(
             GateResidual(in_channels, mid1, out1, quantizer=q, depthwise=depthwise),
             BatchNorm2D(in_channels, quantizer=q),
+            # nn.Identity() 
         )
 
     # Forward.

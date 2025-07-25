@@ -37,6 +37,7 @@ class DepthwiseSeparable(nn.Module):
         )
         self.pw = Conv2d(in_ch, out_ch, kernel_size=1, quantizer=q)
         self.bn = BatchNorm2D(out_ch, quantizer=q)
+        # self.bn = nn.Identity()
 
     # ------------------------------------------------------------------ #
     # Forward.                                                           #

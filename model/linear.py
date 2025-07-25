@@ -40,7 +40,7 @@ class Linear(nn.Linear):
 
 
     # ------------------------------------------------------------------ #
-    def forward(self, x: torch.Tensor) -> torch.Tensor:  # noqa: D401
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
         # Float path when quantiser disabled.
         if not self.quantizer.enabled:
             return F.linear(x, self.weight, self.bias)

@@ -10,6 +10,7 @@ from .conv2d import Conv2d
 from .linear import Linear
 from .dualgatebn import DualGateBN
 from .depthwise import DepthwiseSeparable
+from .gateresidual import GateResidual
 
 
 class BitGateNetV2(nn.Module):
@@ -42,23 +43,36 @@ class BitGateNetV2(nn.Module):
         self.conv1 = Conv2d(1, c1, kernel_size=3, padding=1, quantizer=q)
 
         # Gate residual stack.
-        self.block1 = DualGateBN(c1, c_mid, c1, c_mid, c1, quantizer=q)
-        self.block2 = DualGateBN(c1, c_mid, c1, c_mid, c1, quantizer=q)
+        #self.block1 = DualGateBN(c1, c_mid, c1, c_mid, c1, quantizer=q)
+        #self.block2 = DualGateBN(c1, c_mid, c1, c_mid, c1, quantizer=q)
+
+        # self.block1 = GateResidual(c1, c_mid, c1, quantizer=q)
+        # self.block2 = GateResidual(c1, c_mid, c1, quantizer=q)
+        # debug: Conv1 => DepthwiseSeparable => FC
+        self.block1 = nn.Identity()
+        self.block2 = nn.Identity()
 
         # Depth‑wise separable stage.
         self.dw_stage = DepthwiseSeparable(c1, c2, quantizer=q)
 
+        #debug: Conv1 => Global Pool => FC.
+        self.dw_stage = nn.Identity()
+
         # Head.
         self.global_pool = nn.AdaptiveAvgPool2d(1)
         self.embed = Linear(c2, emb_dim, quantizer=q) if emb_dim else nn.Identity()
-        fc_in = emb_dim or c2
+
+        # fc_in = emb_dim or c2
+        # Debug: If dw_stage is Identity, use c1 instead of c2
+        fc_in = emb_dim or (c1 if isinstance(self.dw_stage, nn.Identity) else c2)
+        
         self.dropout = nn.Dropout(0.2) if use_dropout else nn.Identity()
         self.fc = Linear(fc_in, num_classes, quantizer=q)
 
     # ------------------------------------------------------------------ #
     # Forward.
     # ------------------------------------------------------------------ #
-    def forward(self, x):  # noqa: D401
+    def forward(self, x):
         x = F.relu(self.conv1(x))
         x = self.block1(x)
         x = self.block2(x)
