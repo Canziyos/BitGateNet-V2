@@ -73,10 +73,15 @@ class BitGateNetV2(nn.Module):
     # Forward.
     # ------------------------------------------------------------------ #
     def forward(self, x):
-        x = F.relu(self.conv1(x))
-        x = self.block1(x)
-        x = self.block2(x)
-        x = self.dw_stage(x)
+        x = self.conv1(x)
+        # x = F.relu(x)
+
+        # Bypass residual and depthwise blocks
+        # x = self.block1(x)
+        # x = self.block2(x)
+        # x = self.dw_stage(x)
+
+        # Pool and pass to FC
         x = self.global_pool(x).flatten(1)
         x = self.embed(x)
         x = self.dropout(x)
