@@ -96,7 +96,7 @@ class SymQuant8bit:
         q_x, scale = self.quantize(x)
         return q_x.to(torch.int8), scale
 
-    def __str__(self) -> str:  # noqa: D401
+    def __str__(self) -> str:
         return (
             f"SymQuant{ self.num_bits }bit(group_dim={ self.group_dim }, "
             f"group_size={ self.group_size }, enabled={ self.enabled })"

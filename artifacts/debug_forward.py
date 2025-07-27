@@ -12,83 +12,38 @@ from torch.utils.data import Dataset, DataLoader
 from tqdm import tqdm
 import matplotlib.pyplot as plt
 from model import BitGateNetV2
+from dataset import AudioFolder, collate
 
 # -------------------------------------------------- #
 # Config.
 # -------------------------------------------------- #
-DATASET_DIR      = "dataset"
-SAMPLE_RATE_SRC  = 16_000
-SAMPLE_RATE_DST  = 8_000
-BATCH_SIZE       = 8      # small batch for debugging
-FIX_FRAMES       = 63
-SEED             = 42
-CLASSES = ["go", "stop", "_unknown_", "_silence_"]
+data_dir      = "dataset"
 
-random.seed(SEED)
-torch.manual_seed(SEED)
+batch_size       = 8      # small batch for debugging
+fix_frame       = 63
+seed             = 42
+classes = ["go", "stop", "other"]
 
-# -------------------------------------------------- #
-# Dataset + Collate
-# -------------------------------------------------- #
-class AudioFolder(Dataset):
-    def __init__(self, root: str, split: str):
-        self.samples: list[tuple[str,int]] = []
-        for label_id, cls in enumerate(CLASSES):
-            folder = os.path.join(root, split, cls)
-            for wav in glob.glob(os.path.join(folder, "**", "*.wav"), recursive=True):
-                self.samples.append((wav, label_id))
-        if not self.samples:
-            raise RuntimeError(f"No wav files in {root}/{split}.")
-    def __len__(self): return len(self.samples)
-    def __getitem__(self, idx):
-        wav_path, label = self.samples[idx]
-        wav_np, sr = sf.read(wav_path, dtype="float32")
-        if wav_np.ndim == 1:
-            wav_np = wav_np[:, None]
-        wav = torch.from_numpy(wav_np.T)
-        if sr != SAMPLE_RATE_SRC:
-            wav = torchaudio.functional.resample(wav, sr, SAMPLE_RATE_SRC)
-        return wav, label
+random.seed(seed)
+torch.manual_seed(seed)
 
-mel_fn = torchaudio.transforms.MelSpectrogram(
-    sample_rate=SAMPLE_RATE_DST, n_mels=40, hop_length=128
-)
-
-def collate(batch):
-    wavs, labels = [], []
-    for wav, label in batch:
-        wav = torchaudio.functional.resample(wav, SAMPLE_RATE_SRC, SAMPLE_RATE_DST)
-        mel = mel_fn(wav).log2().clamp(min=-10)
-
-        T = mel.size(-1)
-        if T < FIX_FRAMES:
-            mel = F.pad(mel, (0, FIX_FRAMES - T))
-        else:
-            mel = mel[..., -FIX_FRAMES:]
-
-        wavs.append(mel)
-        labels.append(label)
-
-    x = torch.stack(wavs)
-    y = torch.tensor(labels, dtype=torch.long)
-    return x, y
 
 # -------------------------------------------------- #
 # Test: Overfit one batch
 # -------------------------------------------------- #
 def test_overfit_one_batch(model, device):
     print("\n[Overfit One Batch Test]")
-    train_ds = AudioFolder(DATASET_DIR, "train")
-    train_dl = DataLoader(train_ds, batch_size=BATCH_SIZE,
+    train_ds = AudioFolder(data_dir, "train", classes)
+    train_dl = DataLoader(train_ds, batch_size=batch_size,
                           shuffle=True, collate_fn=collate)
 
-    x, y = next(iter(train_dl))  # grab one batch
+    x, y = next(iter(train_dl))  # grab one batch.
     x, y = x.to(device), y.to(device)
 
     # Debug conv1 in depth
     model.eval()
     with torch.no_grad():
-        conv1_out = model.conv1(x)  # raw Conv1 output
+        conv1_out = model.conv1(x)  # raw Conv1 output.
         print("\n[Conv1 Output Stats]")
         print(f"Shape: {conv1_out.shape}")
         print(f"Min: {conv1_out.min().item():.4f}, Max: {conv1_out.max().item():.4f}")
@@ -142,6 +97,6 @@ def test_overfit_one_batch(model, device):
 # ---------------------------------------------------- #
 if __name__ == "__main__":
     device = "cuda" if torch.cuda.is_available() else "cpu"
-    model = BitGateNetV2(num_classes=len(CLASSES), q_en=False).to(device)
+    model = BitGateNetV2(num_classes=len(classes), q_en=False).to(device)
     # model = BaselineLinear(num_classes=len(CLASSES)).to(device)
     test_overfit_one_batch(model, device)

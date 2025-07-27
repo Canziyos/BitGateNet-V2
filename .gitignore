@@ -209,4 +209,5 @@ __marimo__/
 speech/
 dataset/
 ideas.md
-analysis/forward_debug.md
+forward_debug.md
+checkpoints/

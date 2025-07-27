@@ -96,15 +96,8 @@ class Conv2d(nn.Conv2d):
             else:
                 b_fq = None
 
-            return F.conv2d(
-                x_fq,
-                w_fq,
-                b_fq,
-                self.stride,
-                self.padding,
-                self.dilation,
-                self.groups,
-            )
+            return F.conv2d(x_fq, w_fq, b_fq, self.stride,
+                            self.padding, self.dilation, self.groups,)
 
         # Eval: cache once, then reuse.
         if self._w_fq is None:
@@ -113,12 +106,8 @@ class Conv2d(nn.Conv2d):
         x_q, x_scale = self.quantizer.quantize(x)
         x_fq = self.quantizer.apply_fake_quant(x_q, x_scale, x)
         return F.conv2d(
-            x_fq,
-            self._w_fq,
-            self._b_fq if self.bias is not None else None,
-            self.stride,
-            self.padding,
-            self.dilation,
+            x_fq, self._w_fq, self._b_fq if self.bias is not None else None,
+            self.stride, self.padding, self.dilation,
             self.groups,
         )
 

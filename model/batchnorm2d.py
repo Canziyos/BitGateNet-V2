@@ -30,9 +30,9 @@ class BatchNorm2D(nn.BatchNorm2d):
         self.register_buffer("_w_fq", None)  # cached gamma (float)
         self.register_buffer("_b_fq", None)  # cached beta (float)
 
-    # ------------------------------------------------------------------ #
+    # ---------------------------------------------------------- #
     # Helpers.
-    # ------------------------------------------------------------------ #
+    # ---------------------------------------------------------- #
     def _fake_quant_param(self, p: torch.Tensor) -> torch.Tensor:
         p_q, p_scale = self.quantizer.quantize(p)
         return self.quantizer.apply_fake_quant(p_q, p_scale, p)
@@ -46,10 +46,10 @@ class BatchNorm2D(nn.BatchNorm2d):
             self._w_fq = None
             self._b_fq = None
 
-    # ------------------------------------------------------------------ #
+    # ----------------------------------#
     # Forward.
-    # ------------------------------------------------------------------ #
-    def forward(self, x: torch.Tensor) -> torch.Tensor:  # noqa: D401
+    # ----------------------------------#
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
         if not self.quantizer.enabled:
             return F.batch_norm(
                 x,
