@@ -42,7 +42,7 @@ class Conv2d(nn.Conv2d):
         self.quantizer = quantizer or SymQuant8bit(group_dim=0, group_size=1)
         self.out_int = out_int
         self.register_buffer("_w_fq", None)  # cached de-quantised weight.
-        self.register_buffer("_b_fq", None)  # cached de-quantised bias
+        self.register_buffer("_b_fq", None)  # cached de-quantised bias.
 
 
     # Helpers. #

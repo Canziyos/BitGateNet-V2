@@ -5,13 +5,12 @@ import soundfile as sf
 
 from model import BitGateNetV2
 
-# -------------------
 # Config
 # -------------------
 classes = ["go", "stop", "other"]
 checkpoint_path = "checkpoints/bitgatenet_wide.pth" 
 audio_path = "test_audio.wav" 
-sample_rate_src = 16_000   # original audio
+sample_rate_src = 16_000   # original audio..
 sample_rate_dst = 8_000    # resample target
 fix_frames = 63
 n_mel = 40
@@ -20,7 +19,7 @@ mel_fn = torchaudio.transforms.MelSpectrogram(
     n_mels=n_mel,
     hop_length=128
 )
-# -------------------
+
 # 1. Load model
 # -------------------
 device = "cuda" if torch.cuda.is_available() else "cpu"
@@ -30,9 +29,9 @@ ckpt = torch.load(checkpoint_path, map_location=device)
 model.load_state_dict(ckpt["model"])
 model.eval()
 
-# -------------------
+
 # 2. Preprocess audio
-# -------------------
+# ------------------- 
 def preprocess_wav(path):
     # Load wav
     wav_np, sr = sf.read(path, dtype="float32")
@@ -60,7 +59,6 @@ def preprocess_wav(path):
 
     return mel  # shape [1, 40, 63]
 
-# -------------------
 # 3. Inference
 # -------------------
 mel = preprocess_wav(audio_path).unsqueeze(0).to(device)  # add batch dim
