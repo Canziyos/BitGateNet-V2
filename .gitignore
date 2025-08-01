@@ -207,9 +207,10 @@ marimo/_lsp/
 __marimo__/
 
 speech/
-dataset/
-!dataset/__init__.py
-!dataset/data.py
+dataset/*
+# do not ignore Python code.
+!dataset/*.py
+
 ideas.md
-checkpoints/
+checkpoints/*
 !checkpoints/.gitkeep
