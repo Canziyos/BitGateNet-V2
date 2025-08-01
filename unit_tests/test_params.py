@@ -23,16 +23,16 @@ class TestParameter(unittest.TestCase):
         p.eval()
         x = torch.randn(5)
         with torch.no_grad():
-            _ = p(x)   # first call caches float tensor
-            _ = p(x)   # second call reuses cache without error
+            _ = p(x)   # first call caches float tensor.
+            _ = p(x)   # second call reuses cache without error.
 
     def test_quantised_eval_cache_int8(self):
         p = Parameter(torch.randn(5), quantizer=SymQuant8bit(return_int=True), return_int=True)
         p.eval()
         x = torch.randn(5)
         with torch.no_grad():
-            _ = p(x)   # caches de-quantised float
-            _ = p(x)   # second call reuses cache
+            _ = p(x)   # caches de-quantised float.
+            _ = p(x)   # second call reuses cache.
 
     def test_gradient(self):
         p = Parameter(torch.tensor([2.0]), quantizer=SymQuant8bit(), return_int=False)

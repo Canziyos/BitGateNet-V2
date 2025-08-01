@@ -1,6 +1,5 @@
 import unittest
 import torch
-
 from model import BitGateNetV2
 
 class TestBitGateNetV2(unittest.TestCase):
@@ -48,7 +47,7 @@ class TestBitGateNetV2(unittest.TestCase):
         x = torch.randn(1, 1, 32, 32)
         with torch.no_grad():
             _ = self.model_q(x)
-            _ = self.model_q(x)   # second pass reuses cached tensors
+            _ = self.model_q(x)   # second pass reuses cached tensors.
 
 if __name__ == "__main__":
     unittest.main()

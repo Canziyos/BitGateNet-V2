@@ -39,9 +39,9 @@ class DepthwiseSeparable(nn.Module):
         self.bn = BatchNorm2D(out_ch, quantizer=q)
         # self.bn = nn.Identity()
 
-    # ------------------------------------------------------------------ #
-    # Forward.                                                           #
-    # ------------------------------------------------------------------ #
+
+    # Forward. 
+    # --------------------------- #
     def forward(self, x):
         x = F.relu(self.dw(x))
         x = self.bn(self.pw(x))

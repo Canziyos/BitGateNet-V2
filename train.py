@@ -14,9 +14,8 @@ from contextlib import nullcontext
 from dataset import AudioFolder, collate
 from model import BitGateNetV2
 
-# ------------------------------------------------------------ #
 # 1. Hyperparameters 
-# ------------------------------------------------------------ #
+# ------------------ #
 data_root = "dataset"
 epochs_float = 100
 epochs_qat = 0
@@ -24,8 +23,8 @@ batch_size = 64
 workers = 4
 seed  = 42
 save_dir = "checkpoints"
-user_amp = False           # set True if using mixed precision
-parience = 10              # early stopping patience (0 to disable)
+user_amp = False           # set True if using mixed precision.
+parience = 10              # early stopping patience (0 to disable).
 
 
 random.seed(seed)
@@ -34,11 +33,13 @@ np.random.seed(seed)
 torch.backends.cudnn.deterministic = True
 torch.backends.cudnn.benchmark = False
 
-# 3. Dataset helpers
+# 3. Dataset helpers.
+# --------------------------- #
 classes = ["go", "stop", "other"]
 
-# ---------------------------------------------------- #
-# 4. Checkpoint helpers
+
+# 4. Checkpoint helpers.
+# ------------------------------------------------- #
 def save_ckpt(path: str, epoch: int, model, opt, sched, scaler,
               best_acc: float, hparams: dict):
     torch.save({
@@ -52,7 +53,6 @@ def save_ckpt(path: str, epoch: int, model, opt, sched, scaler,
     }, path)
     print(f"Saved checkpoint => {path}")
 
-# ------------------------------------------------------------ #
 # 5. Train / Val loop
 # ------------------------------------------------------------ #
 def run_epoch(model, loader, device, scaler, use_amp, train=False, opt=None, sched=None):
@@ -83,15 +83,15 @@ def run_epoch(model, loader, device, scaler, use_amp, train=False, opt=None, sch
 
     return total_loss / len(loader), 100. * correct / total
 
-# ------------------------------------------------------------ #
+
 # 6. Main routine
-# ------------------------------------------------------------ #
+# --------------------------------------- #
 def main():
     os.makedirs(save_dir, exist_ok=True)
     device = "cuda" if torch.cuda.is_available() else "cpu"
     use_amp = user_amp and torch.cuda.is_available()
 
-    # Data
+    # Data.
     train_ds = AudioFolder(data_root, "train", classes)
     val_ds = AudioFolder(data_root, "val", classes)
     print("Class counts:", {classes[k]: v for k, v in Counter(lbl for _, lbl in train_ds).items()})
@@ -104,7 +104,7 @@ def main():
                           collate_fn=collate, num_workers=workers,
                           pin_memory=use_amp, persistent_workers=use_amp)
 
-    # Model
+    # Model.
     model = BitGateNetV2(num_classes=len(classes), q_en=False).to(device)
 
     steps_pe = len(train_dl)
@@ -139,7 +139,7 @@ def main():
             print(f"Early-stopping: no val-acc improvement in {parience} epochs.")
             break
 
-    # QAT fine-tuning
+    # QAT fine-tuning.
     if best_acc >= 75.0 and epochs_qat > 0:
         print(f"\nSwitching to QAT — best float acc {best_acc:.2f}%")
         qat_model = BitGateNetV2(num_classes=len(classes), q_en=True, quantscale=0.8).to(device)

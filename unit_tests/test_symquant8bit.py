@@ -14,7 +14,7 @@ class TestSymQuant8bit(unittest.TestCase):
 
     # ---------------------- #
     # Fundamental behaviour. #
-    # --------------------- #
+    # ---------------------- #
 
     def test_scalar_roundtrip(self):
         x = torch.tensor(3.14159, dtype=torch.float32)

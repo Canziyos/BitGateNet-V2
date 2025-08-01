@@ -7,7 +7,7 @@ from utils import SymQuant8bit
 
 class DualGateBN(nn.Module):
     """Two GateResidual + BatchNorm2D blocks with a residual skip.
-    Structure: (Gate → BN) × 2, followed by skip‑connection add.
+    Structure: (Gate => BN) × 2, followed by skip‑connection add.
     """
 
     def __init__(
@@ -19,14 +19,13 @@ class DualGateBN(nn.Module):
         out1: int,
         *,
         quantizer: SymQuant8bit | None = None,
-        depthwise: bool = False,
     ) -> None:
         super().__init__()
         q = quantizer or SymQuant8bit(quantscale=0.25)
 
         # First Gate + BN.
         self.block1 = nn.Sequential(
-            GateResidual(in_channels, mid0, out0, quantizer=q, depthwise=depthwise),
+            GateResidual(in_channels, mid0, out0, quantizer=q),
             BatchNorm2D(in_channels, quantizer=q),
             # nn.Identity()
 
@@ -34,7 +33,7 @@ class DualGateBN(nn.Module):
 
         # Second Gate + BN.
         self.block2 = nn.Sequential(
-            GateResidual(in_channels, mid1, out1, quantizer=q, depthwise=depthwise),
+            GateResidual(in_channels, mid1, out1, quantizer=q),
             BatchNorm2D(in_channels, quantizer=q),
             # nn.Identity() 
         )

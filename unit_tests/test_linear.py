@@ -26,7 +26,7 @@ class TestLinear(unittest.TestCase):
         layer.eval()
         x = torch.randn(1, 32)
         with torch.no_grad():
-            _ = layer(x)     # first pass caches
+            _ = layer(x)     # first pass caches.
             _ = layer(x)     # reuse
 
     def test_eval_cache_int8(self):
@@ -47,5 +47,5 @@ class TestLinear(unittest.TestCase):
         self.assertGreater(x.grad.abs().sum().item(), 0.0)
 
 
-if __name__ == "__main__":   # noqa: D401
+if __name__ == "__main__":
     unittest.main()

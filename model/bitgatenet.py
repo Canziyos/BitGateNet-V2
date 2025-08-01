@@ -35,8 +35,8 @@ class BitGateNetV2(nn.Module):
         def _c(ch: int) -> int:
             return max(8, int(round(ch * width_mult / 8)) * 8)
 
-        c1 = _c(8)
-        c_mid = _c(16)
+        c1 = _c(16)
+        c_mid = _c(32)
         c2 = _c(32)
 
         # Stem.
@@ -68,43 +68,45 @@ class BitGateNetV2(nn.Module):
         # Head.
         self.global_pool = nn.AdaptiveAvgPool2d(1)
         self.embed = Linear(c2, emb_dim, quantizer=q) if emb_dim else nn.Identity()
+        #self.embed = Linear(c1, emb_dim, quantizer=q) if emb_dim else nn.Identity()
 
         fc_in = emb_dim or (c2*63)
+        self.fc = Linear(fc_in, num_classes, quantizer=q)
         # Debug: If dw_stage is Identity, use c1 instead of c2
         #fc_in = emb_dim or (c1 if isinstance(self.dw_stage, nn.Identity) else c2)
         # If skipping global pool, input is c1 * 40 * 63
         #fc_in = emb_dim or (c1*63 if isinstance(self.dw_stage, nn.Identity) else c2)
-        self.fc = Linear(fc_in, num_classes, quantizer=q)
-
+        
+        # fc_in = emb_dim or (c1*63)
+        # self.fc = Linear(fc_in, num_classes, quantizer=q)
 
         self.dropout = nn.Dropout(0.2) if use_dropout else nn.Identity()
         self.fc = Linear(fc_in, num_classes, quantizer=q)
 
-    # ------------------------------------------------------------------ #
     # Forward.
-    # ------------------------------------------------------------------ #
-    def forward(self, x):
+    # ------------------- #
+    def forward(self, x, return_features=False):
+        # Initial conv + gate blocks
         x = self.conv1(x)
-        # x = F.relu(x)
-
-        # Bypass residual and depthwise blocks
         x = self.block1(x)
         x = self.block2(x)
         x = self.dw_stage(x)
 
-        # Pool and pass to FC
-        # THe bug was in the next line.
-        #x = self.global_pool(x).flatten(1)
-
-        #debug revealed the issue
-        #x = x.flatten(1)
+        # ----- Feature tap (before pooling) -----
+        features = x  # B*C*F (frequency/time)
 
         # Average over frequency (dim=2), keep time resolution
-        x = x.mean(dim=2)     # now B x C x 63
-        x = x.flatten(1)      # now B x (C*63)
+        x = x.mean(dim=2)        # now B*C*63
+        x = x.flatten(1)         # flatten to B*(C*63)
         x = self.embed(x)
         x = self.dropout(x)
-        return self.fc(x)
+        logits = self.fc(x)
+
+        # Return logits + features if requested (for feature KD)
+        if return_features:
+            return logits, features
+        return logits
+
 
     def __str__(self):
         return "BitGateNetV2"

@@ -20,9 +20,8 @@ class Parameter(nn.Module):
         self.return_int = return_int
         self.register_buffer("_p_cache", None)  # float cache for eval().
 
-    # ------------------------------------------------------------------ #
     # Helpers.
-    # ------------------------------------------------------------------ #
+    # ------- #
     def _fq_param(self) -> torch.Tensor:
         q_p, s_p = self.quantizer.quantize(self.param)
         return self.quantizer.apply_fake_quant(q_p, s_p, self.param)
@@ -38,9 +37,8 @@ class Parameter(nn.Module):
             else:
                 self._p_cache = self.quantizer.apply_fake_quant(q_p, s_p, self.param)
 
-    # ------------------------------------------------------------------ #
     # Forward.
-    # ------------------------------------------------------------------ #
+    # -------- #
     def forward(self, x: torch.Tensor | None = None) -> torch.Tensor:
         if not self.quantizer.enabled:
             p = self.param

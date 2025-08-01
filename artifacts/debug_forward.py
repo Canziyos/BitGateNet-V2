@@ -17,16 +17,14 @@ from dataset import AudioFolder, collate
 # -------------------------------------------------- #
 # Config.
 # -------------------------------------------------- #
-data_dir      = "dataset"
-
-batch_size       = 8      # small batch for debugging
-fix_frame       = 63
-seed             = 42
+data_dir = "dataset"
+batch_size = 8      # small batch for debugging
+fix_frame = 63
+seed = 42
 classes = ["go", "stop", "other"]
 
 random.seed(seed)
 torch.manual_seed(seed)
-
 
 # -------------------------------------------------- #
 # Test: Overfit one batch

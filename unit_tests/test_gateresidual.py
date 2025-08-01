@@ -14,7 +14,7 @@ class TestGateResidual(unittest.TestCase):
     # ---------------------------------------------------------- #
     def test_forward_shape(self):
         gr = self._block()
-        x = torch.randn(3, 32, 31, 29)     # odd H,W to stress upsample sizing
+        x = torch.randn(3, 32, 31, 29)     # odd H,W to stress upsample sizing.
         y = gr(x)
         self.assertEqual(y.shape, x.shape)
 

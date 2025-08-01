@@ -3,8 +3,6 @@ from .log_tools import LoggerUnit
 
 class SymQuant8bit:
     """Symmetric fake‑quantiser with optional group‑wise scaling."""
-
-    # --------------------- #
     # Construction.
     # --------------------- #
     def __init__(

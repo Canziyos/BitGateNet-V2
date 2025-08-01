@@ -44,7 +44,7 @@ class Conv2d(nn.Conv2d):
         self.register_buffer("_w_fq", None)  # cached de-quantised weight.
         self.register_buffer("_b_fq", None)  # cached de-quantised bias
 
-    # -------- #
+
     # Helpers. #
     # -------- #
     def _cache_eval_tensors(self) -> None:
@@ -66,9 +66,9 @@ class Conv2d(nn.Conv2d):
                 b_fq = self.quantizer.apply_fake_quant(b_q, b_scale, self.bias)
             self._b_fq = b_fq
 
-    # ------------------------------------------------------------------ #
-    # Forward.                                                           #
-    # ------------------------------------------------------------------ #
+
+    # Forward.
+    # -------------------------------------------- #
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         # Float path when quantiser disabled.
         if not self.quantizer.enabled:

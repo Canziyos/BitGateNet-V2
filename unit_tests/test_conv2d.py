@@ -1,6 +1,5 @@
 import unittest
 import torch
-
 from model import Conv2d 
 from utils import SymQuant8bit
 
@@ -32,7 +31,7 @@ class TestConv2d(unittest.TestCase):
     # Eval cache reuse.                                          #
     # ---------------------------------------------------------- #
     def test_eval_cache(self):
-        conv = self._layer(out_int=True)   # cache path exercises int8→float
+        conv = self._layer(out_int=True)   # cache path exercises int8=>float.
         conv.eval()
         x = torch.randn(1, 8, 10, 10)
         with torch.no_grad():

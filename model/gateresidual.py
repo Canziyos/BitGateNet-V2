@@ -34,7 +34,7 @@ class GateResidual(nn.Module):
         out_ch: int,
         *,
         quantizer: SymQuant8bit | None = None,
-        depthwise: bool = False,
+        depthwise: bool = True,
     ) -> None:
         super().__init__()
         self.q = quantizer or SymQuant8bit(quantscale=1.0)
